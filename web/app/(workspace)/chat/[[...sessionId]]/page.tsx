@@ -227,6 +227,14 @@ const CAPABILITIES: CapabilityDef[] = [
     allowedTools: [],
     defaultTools: [],
   },
+  {
+    value: "guided_learning",
+    label: "Guided Learning",
+    description: "Framework v1.8.2 — diagnostic, mastery-based study, spaced repetition",
+    icon: Lightbulb,
+    allowedTools: ["rag", "web_search", "code_execution"],
+    defaultTools: ["rag"],
+  },
 ];
 
 interface KnowledgeBase {
