@@ -22,7 +22,9 @@ class LearningService:
         existing = self._store.load(book_id)
         if existing is not None:
             return existing
-        return LearningProgress(book_id=book_id)
+        progress = LearningProgress(book_id=book_id)
+        self._store.save(progress)  # persist immediately to prevent race
+        return progress
 
     def init_modules(
         self, progress: LearningProgress, modules: list[LearningModule]
