@@ -19,6 +19,30 @@ from deeptutor.learning.models import (
 from deeptutor.learning.scheduler import SpacedRepetitionScheduler
 from deeptutor.learning.service import LearningService
 from deeptutor.learning.storage import LearningStore
+from deeptutor.learning.prompts import (
+    DIAGNOSTIC_PHASE1_SYSTEM,
+    DIAGNOSTIC_PHASE1_USER,
+    DIAGNOSTIC_PHASE2_SYSTEM,
+    DIAGNOSTIC_PHASE2_USER,
+    ERROR_DIAGNOSIS_SYSTEM,
+    ERROR_DIAGNOSIS_USER,
+    EXPLAIN_SYSTEM,
+    EXPLAIN_USER,
+    FEYNMAN_SYSTEM,
+    FEYNMAN_USER,
+    METACOGNITIVE_SYSTEM,
+    METACOGNITIVE_USER,
+    MODULE_TEST_SYSTEM,
+    MODULE_TEST_USER,
+    PLAN_SYSTEM,
+    PLAN_USER,
+    PRACTICE_SYSTEM,
+    PRACTICE_USER,
+    PRETEST_SYSTEM,
+    PRETEST_USER,
+    REVIEW_SYSTEM,
+    REVIEW_USER,
+)
 from deeptutor.services.llm import complete
 
 
@@ -41,31 +65,6 @@ class GuidedLearningCapability(BaseCapability):
             "completed",
         ],
         tools_used=["rag", "code_execution", "web_search"],
-    )
-
-    from deeptutor.learning.prompts import (
-        DIAGNOSTIC_PHASE1_SYSTEM,
-        DIAGNOSTIC_PHASE1_USER,
-        DIAGNOSTIC_PHASE2_SYSTEM,
-        DIAGNOSTIC_PHASE2_USER,
-        ERROR_DIAGNOSIS_SYSTEM,
-        ERROR_DIAGNOSIS_USER,
-        EXPLAIN_SYSTEM,
-        EXPLAIN_USER,
-        FEYNMAN_SYSTEM,
-        FEYNMAN_USER,
-        METACOGNITIVE_SYSTEM,
-        METACOGNITIVE_USER,
-        MODULE_TEST_SYSTEM,
-        MODULE_TEST_USER,
-        PLAN_SYSTEM,
-        PLAN_USER,
-        PRACTICE_SYSTEM,
-        PRACTICE_USER,
-        PRETEST_SYSTEM,
-        PRETEST_USER,
-        REVIEW_SYSTEM,
-        REVIEW_USER,
     )
 
     def __init__(
@@ -233,7 +232,9 @@ class GuidedLearningCapability(BaseCapability):
         self, progress: LearningProgress, context: UnifiedContext, stream: StreamBus
     ) -> None:
         async with stream.stage("pretest", source=self.manifest.name):
-            response = await self._call_llm(PRETEST_SYSTEM, PRETEST_USER)
+            response = await self._call_llm(
+                PRETEST_SYSTEM, PRETEST_USER.format(knowledge_point=self._current_kp_name(progress))
+            )
             await stream.content(response)
             self._service.advance_stage(progress, LearningStage.EXPLAIN)
 
@@ -241,7 +242,9 @@ class GuidedLearningCapability(BaseCapability):
         self, progress: LearningProgress, context: UnifiedContext, stream: StreamBus
     ) -> None:
         async with stream.stage("explain", source=self.manifest.name):
-            response = await self._call_llm(EXPLAIN_SYSTEM, EXPLAIN_USER)
+            response = await self._call_llm(
+                EXPLAIN_SYSTEM, EXPLAIN_USER.format(knowledge_point=self._current_kp_name(progress))
+            )
             await stream.content(response)
             self._service.advance_stage(progress, LearningStage.FEYNMAN_CHECK)
 
@@ -249,7 +252,9 @@ class GuidedLearningCapability(BaseCapability):
         self, progress: LearningProgress, context: UnifiedContext, stream: StreamBus
     ) -> None:
         async with stream.stage("feynman_check", source=self.manifest.name):
-            response = await self._call_llm(FEYNMAN_SYSTEM, FEYNMAN_USER)
+            response = await self._call_llm(
+                FEYNMAN_SYSTEM, FEYNMAN_USER.format(knowledge_point=self._current_kp_name(progress))
+            )
             await stream.content(response)
             kps = self._current_knowledge_points(progress)
             if progress.current_kp_index + 1 < len(kps):
@@ -257,6 +262,19 @@ class GuidedLearningCapability(BaseCapability):
                 self._service.advance_stage(progress, LearningStage.PRETEST)
             else:
                 self._service.advance_stage(progress, LearningStage.PRACTICE)
+
+    def _current_kp_name(self, progress: LearningProgress) -> str:
+        kps = self._current_knowledge_points(progress)
+        if kps and progress.current_kp_index < len(kps):
+            return kps[progress.current_kp_index].name
+        return "未知知识点"
+
+    def _current_module_name(self, progress: LearningProgress) -> str:
+        if progress.current_module_id:
+            for mod in progress.modules:
+                if mod.id == progress.current_module_id:
+                    return mod.name
+        return "未知模块"
 
     def _after_knowledge_point(self, progress: LearningProgress) -> None:
         progress.current_kp_index += 1
@@ -268,7 +286,9 @@ class GuidedLearningCapability(BaseCapability):
         self, progress: LearningProgress, context: UnifiedContext, stream: StreamBus
     ) -> None:
         async with stream.stage("practice", source=self.manifest.name):
-            response = await self._call_llm(PRACTICE_SYSTEM, PRACTICE_USER)
+            response = await self._call_llm(
+                PRACTICE_SYSTEM, PRACTICE_USER.format(module_name=self._current_module_name(progress))
+            )
             await stream.content(response)
             self._service.advance_stage(progress, LearningStage.ERROR_DIAGNOSIS)
 
@@ -284,7 +304,9 @@ class GuidedLearningCapability(BaseCapability):
         self, progress: LearningProgress, context: UnifiedContext, stream: StreamBus
     ) -> None:
         async with stream.stage("module_test", source=self.manifest.name):
-            response = await self._call_llm(MODULE_TEST_SYSTEM, MODULE_TEST_USER)
+            response = await self._call_llm(
+                MODULE_TEST_SYSTEM, MODULE_TEST_USER.format(module_name=self._current_module_name(progress))
+            )
             await stream.content(response)
             self._init_repetition_states(progress)
             self._service.advance_stage(progress, LearningStage.REVIEW)
