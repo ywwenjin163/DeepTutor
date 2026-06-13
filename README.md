@@ -697,7 +697,7 @@ DeepTutor is an open-source project led by [Bingxi Zhao](https://github.com/panc
 
 Heartfelt thanks to [**Chao Huang**](https://sites.google.com/view/chaoh), director of the Data Intelligence Lab @ HKU, and to our HKUDS labmates for their warm support — especially [**Jiahao Zhang**](https://github.com/zzhtx258), [**Zirui Guo**](https://github.com/LarFii), and [**Xubin Ren**](https://github.com/Re-bin). We're also deeply grateful to the **open-source community**: your stars, issues, pull requests, and discussions shape DeepTutor every single day.
 
-DeepTutor stands on the shoulders of outstanding open-source projects that gave us both tools and inspiration:
+DeepTutor also stands on the shoulders of outstanding open-source projects that gave us both tools and inspiration:
 
 | Project | Role / Inspiration |
 |:---|:---|
