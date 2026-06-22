@@ -91,6 +91,35 @@ def test_dockerfile_is_json_driven_without_bundle_sed() -> None:
     assert "export_runtime_settings_to_env" in content
 
 
+def test_supervisord_runs_as_root_with_unprivileged_children() -> None:
+    """supervisord itself must run as root so it can open the container's
+    stdout/stderr (``/dev/fd/1,2`` — root-owned pipes under a rootful daemon
+    such as Docker Desktop) and write its pidfile under ``/var/run``. Dropping
+    supervisord to the unprivileged ``deeptutor`` user via ``gosu`` made child
+    spawning fail with ``EACCES`` ("making dispatchers ... EACCES"), so neither
+    the backend nor the frontend started under rootful Docker (it only worked
+    under rootless podman). The app processes stay non-root via the per-program
+    ``user=deeptutor`` directive instead, which keeps them unprivileged in both
+    runtimes. This guards against reintroducing the ``gosu`` privilege drop.
+    """
+    root = Path(__file__).resolve().parents[2]
+    content = (root / "Dockerfile").read_text(encoding="utf-8")
+    # supervisord is launched directly (as root), not behind a gosu priv-drop.
+    assert "exec /usr/bin/supervisord" in content
+    assert "gosu deeptutor /usr/bin/supervisord" not in content
+    # Every supervisord program drops to the unprivileged deeptutor user, so the
+    # backend/frontend processes never run as root. Each config heredoc closes
+    # with ``EOF``; slice to it so a program's section is bounded correctly.
+    program_blocks = content.split("[program:")[1:]
+    assert program_blocks, "expected supervisord [program:*] sections in the Dockerfile"
+    for block in program_blocks:
+        name = block.splitlines()[0].rstrip("]")
+        section = block.split("EOF")[0]
+        assert "user=deeptutor" in section, (
+            f"supervisord program '{name}' must run as deeptutor (user=deeptutor)"
+        )
+
+
 def test_frontend_api_is_url_agnostic_passthrough() -> None:
     """web/lib/api.ts no longer carries a build-time API base or a placeholder
     token; apiUrl/wsUrl are pass-throughs and the Next.js middleware
