@@ -180,7 +180,9 @@ def test_detect_backend_distinguishes_json_and_binary(tmp_path: Path) -> None:
 
     faiss_dir = tmp_path / "faiss"
     faiss_dir.mkdir()
-    faiss.write_index(faiss.IndexFlatIP(_DIM), str(faiss_dir / vector_store.DEFAULT_VECTOR_STORE_FILENAME))
+    faiss.write_index(
+        faiss.IndexFlatIP(_DIM), str(faiss_dir / vector_store.DEFAULT_VECTOR_STORE_FILENAME)
+    )
     assert vector_store.detect_backend(faiss_dir) == vector_store.BACKEND_FAISS
 
     # Missing file => assume simple (and never crash).
@@ -231,9 +233,7 @@ def test_reindex_supersedes_legacy_simple_version_with_faiss(tmp_path: Path) -> 
     )
 
     kb_dir = tmp_path / "kb"
-    sig = EmbeddingSignature(
-        binding="b", model="m", dimension=_DIM, base_url="", api_version=""
-    )
+    sig = EmbeddingSignature(binding="b", model="m", dimension=_DIM, base_url="", api_version="")
 
     # version-1: the pre-upgrade SimpleVectorStore index.
     v1 = kb_dir / "version-1"

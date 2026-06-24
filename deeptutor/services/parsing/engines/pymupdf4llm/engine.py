@@ -97,9 +97,7 @@ class PyMuPDF4LLMParser:
         try:
             markdown = to_markdown(str(source_path), **kwargs)
         except Exception as exc:  # noqa: BLE001 - surface as a parser error
-            raise ParserError(
-                f"PyMuPDF4LLM failed to convert {source_path.name}: {exc}"
-            )
+            raise ParserError(f"PyMuPDF4LLM failed to convert {source_path.name}: {exc}")
 
         if config.write_images:
             markdown = self._portable_image_links(str(markdown), images_dir)

@@ -371,7 +371,7 @@ Chaque partner a un `SOUL.md`, une sélection de modèle, des canaux, une politi
 <img src="../../assets/figs/web-1.4.6+/partners/02-IM%20config%20for%20each%20partner.png" alt="Configuration du canal IM par partner" width="900">
 </div>
 
-La couche de canaux est pilotée par schéma et peut se connecter à des plateformes IM telles que Feishu, Telegram, Slack, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix et Microsoft Teams selon les extras installés et les identifiants configurés. Un partner peut également être connecté comme sous-agent et consulté depuis un tour de chat normal — voir **My Agents** ci-dessous.
+La couche de canaux est pilotée par schéma et peut se connecter à des plateformes IM telles que Feishu, Telegram, Slack, Discord, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix, Mochat et Microsoft Teams selon les extras installés et les identifiants configurés. Un partner peut également être connecté comme sous-agent et consulté depuis un tour de chat normal — voir **My Agents** ci-dessous.
 
 </details>
 
@@ -437,13 +437,13 @@ Chaque chapitre se compile en blocs typés — texte, encadrés, quiz, fiches, c
 <img src="../../assets/figs/web-1.4.6+/knowledge/00-overview.png" alt="Knowledge Center de DeepTutor" width="900">
 </div>
 
-Les bases de connaissances sont les collections de documents derrière le RAG — elles ancrent les tours de Chat, les éditions Co-Writer, la génération de Book et les conversations Partner. Ce qui est distinctif est un **choix de moteurs de récupération** : **LlamaIndex** (par défaut, vecteur local + BM25), **PageIndex** (hébergé, récupération par raisonnement avec citations au niveau de la page), **GraphRAG** et **LightRAG** (récupération par graphe de connaissances), ou un vault **Obsidian** lié que le tuteur lit et écrit en place. Chaque KB est indexée par un moteur.
+Les bases de connaissances sont les collections de documents derrière le RAG — elles ancrent les tours de Chat, les éditions Co-Writer, la génération de Book et les conversations Partner. Ce qui est distinctif est un **choix de moteurs de récupération** : **LlamaIndex** (par défaut, vecteur local + BM25), **PageIndex** (hébergé, récupération par raisonnement avec citations au niveau de la page), **GraphRAG** et **LightRAG** (récupération par graphe de connaissances), **LightRAG Server** (récupération déléguée à une instance LightRAG externe connectée via HTTP), ou un vault **Obsidian** lié que le tuteur lit et écrit en place. Chaque KB est liée à un moteur.
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/knowledge/01-create%20knowledge%20base.png" alt="Créer une base de connaissances" width="900">
 </div>
 
-En créant une KB, vous choisissez soit de **créer nouvelle** (uploadez des documents et construisez un index frais) soit de **lier une existante** (réutilisez un index construit ailleurs, lu en place sans re-indexation). La re-indexation écrit un nouveau répertoire plat `version-N` et conserve les précédents, donc un index fonctionnel n'est jamais détruit en milieu de reconstruction. L'analyse de documents — Text-only, MinerU, Docling ou markitdown — est choisie dans **Paramètres → Base de Connaissances**, avec les téléchargements de modèles locaux désactivés par défaut. La CLI reprend le cycle de vie avec `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default` et `delete`.
+En créant une KB, vous choisissez soit de **créer nouvelle** (uploadez des documents et construisez un index frais) soit de **lier une existante** (réutilisez un index construit ailleurs, lu en place sans re-indexation). La re-indexation écrit un nouveau répertoire plat `version-N` et conserve les précédents, donc un index fonctionnel n'est jamais détruit en milieu de reconstruction. L'analyse de documents — Text-only, MinerU, Docling, markitdown ou PyMuPDF4LLM — est choisie dans **Paramètres → Base de Connaissances**, avec les téléchargements de modèles locaux désactivés par défaut. La CLI reprend le cycle de vie avec `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default` et `delete`.
 
 </details>
 
@@ -471,7 +471,7 @@ Vous n'avez pas à écrire chaque compétence vous-même — **Importer depuis E
 <img src="../../assets/figs/web-1.4.6+/memory/00-overview.png" alt="Aperçu de la mémoire DeepTutor" width="900">
 </div>
 
-Memory est un système en trois couches sauvegardé sur fichier que vous pouvez lire, organiser et auditer — délibérément *pas* un store vectoriel caché. **L1** est le miroir de l'espace de travail plus une trace d'événements en ajout seul (`trace/<surface>/<date>.jsonl`) ; **L2** contient des faits organisés par surface (`L2/<surface>.md`) ; **L3** est la synthèse inter-surfaces (`L3/<profile|recent|scope>.md`). Parce que L2 cite L1 et L3 cite L2, rien dans votre profil n'est sans compte rendu.
+Memory est un système en trois couches sauvegardé sur fichier que vous pouvez lire, organiser et auditer — délibérément *pas* un store vectoriel caché. **L1** est le miroir de l'espace de travail plus une trace d'événements en ajout seul (`trace/<surface>/<date>.jsonl`) ; **L2** contient des faits organisés par surface (`L2/<surface>.md`) ; **L3** est la synthèse inter-surfaces (`L3/<profile|recent|scope|preferences>.md`). Parce que L2 cite L1 et L3 cite L2, rien dans votre profil n'est sans compte rendu.
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/memory/01-3%20layer%20memory%20graph.png" alt="Graphe de mémoire DeepTutor" width="900">
@@ -572,7 +572,7 @@ Le dépôt inclut un [`SKILL.md`](SKILL.md) racine — un document de passation 
 | `deeptutor chat` | REPL interactif avec contrôles de capacité, outil, KB, carnet et historique |
 | `deeptutor partner list/create/start/stop` | Gérer les partners connectés à IM |
 | `deeptutor kb list/info/create/add/search/set-default/delete` | Gérer les bases de connaissances LlamaIndex |
-| `deeptutor skill search/install/list/remove/login/publish/update` | Gérer les compétences, installer depuis les hubs et publier les siennes (`eduhub:<slug>` par défaut, voir Écosystème) |
+| `deeptutor skill search/install/list/remove/login/logout/publish/update` | Gérer les compétences, installer depuis les hubs et publier les siennes (`eduhub:<slug>` par défaut, voir Écosystème) |
 | `deeptutor memory show/clear` | Inspecter les documents de mémoire L2/L3 ou effacer la mémoire L1/toute |
 | `deeptutor session list/show/open/rename/delete` | Gérer les sessions partagées |
 | `deeptutor notebook list/create/show/add-md/replace-md/remove-record` | Gérer les carnets depuis des fichiers Markdown |

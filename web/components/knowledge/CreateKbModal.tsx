@@ -96,7 +96,9 @@ export default function CreateKbModal({
   const [serverUrl, setServerUrl] = useState("");
   const [apiKey, setApiKey] = useState("");
   const [serverMode, setServerMode] = useState("");
-  const [serverProbe, setServerProbe] = useState<LightRagServerProbe | null>(null);
+  const [serverProbe, setServerProbe] = useState<LightRagServerProbe | null>(
+    null,
+  );
   const [serverProbing, setServerProbing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);

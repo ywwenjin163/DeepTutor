@@ -679,7 +679,9 @@ export async function probeLightRagServer(payload: {
     },
   );
   if (!res.ok) {
-    throw new Error(await readErrorDetail(res, "Failed to reach LightRAG server"));
+    throw new Error(
+      await readErrorDetail(res, "Failed to reach LightRAG server"),
+    );
   }
   return (await res.json()) as LightRagServerProbe;
 }
@@ -709,7 +711,9 @@ export async function connectLightRagServer(payload: {
     },
   );
   if (!res.ok) {
-    throw new Error(await readErrorDetail(res, "Failed to connect LightRAG server"));
+    throw new Error(
+      await readErrorDetail(res, "Failed to connect LightRAG server"),
+    );
   }
   invalidateKnowledgeCaches();
   return (await res.json()) as {

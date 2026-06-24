@@ -349,7 +349,7 @@ Każdy partner ma `SOUL.md`, wybór modelu, kanały, politykę narzędzi i przyp
 <img src="../../assets/figs/web-1.4.6+/partners/02-IM%20config%20for%20each%20partner.png" alt="Konfiguracja kanału IM per partner" width="900">
 </div>
 
-Warstwa kanałów jest sterowana schematem i może łączyć się z platformami IM takimi jak Feishu, Telegram, Slack, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix i Microsoft Teams w zależności od zainstalowanych dodatków i skonfigurowanych danych uwierzytelniających. Partner może być również podłączony jako subagent i konsultowany z normalnej tury czatu — patrz **My Agents** poniżej.
+Warstwa kanałów jest sterowana schematem i może łączyć się z platformami IM takimi jak Feishu, Telegram, Slack, Discord, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix, Mochat i Microsoft Teams w zależności od zainstalowanych dodatków i skonfigurowanych danych uwierzytelniających. Partner może być również podłączony jako subagent i konsultowany z normalnej tury czatu — patrz **My Agents** poniżej.
 
 </details>
 
@@ -415,13 +415,13 @@ Każdy rozdział kompiluje się do typowanych bloków — tekst, callouts, quizy
 <img src="../../assets/figs/web-1.4.6+/knowledge/00-overview.png" alt="Knowledge Center DeepTutor" width="900">
 </div>
 
-Bazy wiedzy to kolekcje dokumentów za RAG — ugruntowują tury Chat, edycje Co-Writer, generowanie Book i konwersacje Partner. Wyróżnikiem jest **wybór silnika wyszukiwania**: **LlamaIndex** (domyślny, lokalny wektor + BM25), **PageIndex** (hostowany, wyszukiwanie z rozumowaniem z cytowaniami na poziomie strony), **GraphRAG** i **LightRAG** (wyszukiwanie oparte na grafach wiedzy) lub podłączony vault **Obsidian** który tutor czyta i zapisuje w miejscu. Każda KB jest indeksowana przez jeden silnik.
+Bazy wiedzy to kolekcje dokumentów za RAG — ugruntowują tury Chat, edycje Co-Writer, generowanie Book i konwersacje Partner. Wyróżnikiem jest **wybór silnika wyszukiwania**: **LlamaIndex** (domyślny, lokalny wektor + BM25), **PageIndex** (hostowany, wyszukiwanie z rozumowaniem z cytowaniami na poziomie strony), **GraphRAG** i **LightRAG** (wyszukiwanie oparte na grafach wiedzy), **LightRAG Server** (wyszukiwanie odciążone do zewnętrznej instancji LightRAG którą łączysz przez HTTP) lub podłączony vault **Obsidian** który tutor czyta i zapisuje w miejscu. Każda KB jest powiązana z jednym silnikiem.
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/knowledge/01-create%20knowledge%20base.png" alt="Tworzenie bazy wiedzy" width="900">
 </div>
 
-Tworząc KB, albo **tworzysz nową** (przesyłasz dokumenty i budujesz świeży indeks) albo **łączysz istniejącą** (ponownie używasz indeksu zbudowanego gdzie indziej, czytasz w miejscu bez ponownego indeksowania). Ponowne indeksowanie zapisuje nowy płaski katalog `version-N` i zachowuje poprzednie, więc działający indeks nigdy nie jest niszczony w trakcie przebudowy. Parsowanie dokumentów — Tylko tekst, MinerU, Docling lub markitdown — jest wybierane w **Settings → Knowledge Base**, z domyślnie wyłączonymi pobieraniami lokalnego modelu. CLI odzwierciedla cykl życia za pomocą `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default` i `delete`.
+Tworząc KB, albo **tworzysz nową** (przesyłasz dokumenty i budujesz świeży indeks) albo **łączysz istniejącą** (ponownie używasz indeksu zbudowanego gdzie indziej, czytasz w miejscu bez ponownego indeksowania). Ponowne indeksowanie zapisuje nowy płaski katalog `version-N` i zachowuje poprzednie, więc działający indeks nigdy nie jest niszczony w trakcie przebudowy. Parsowanie dokumentów — Tylko tekst, MinerU, Docling, markitdown lub PyMuPDF4LLM — jest wybierane w **Settings → Knowledge Base**, z domyślnie wyłączonymi pobieraniami lokalnego modelu. CLI odzwierciedla cykl życia za pomocą `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default` i `delete`.
 
 </details>
 
@@ -449,7 +449,7 @@ Nie musisz pisać każdej umiejętności samodzielnie — **Import from EduHub**
 <img src="../../assets/figs/web-1.4.6+/memory/00-overview.png" alt="Przegląd Memory DeepTutor" width="900">
 </div>
 
-Memory to system trzywarstwowy oparty na plikach, który możesz czytać, selekcjonować i audytować — celowo *nie* ukryty magazyn wektorowy. **L1** to lustro obszaru roboczego plus dołączany ślad zdarzeń (`trace/<surface>/<date>.jsonl`); **L2** to wyselekcjonowane fakty per-powierzchnia (`L2/<surface>.md`); **L3** to synteza między-powierzchniowa (`L3/<profile|recent|scope>.md`). Ponieważ L2 cytuje L1, a L3 cytuje L2, nic w twoim profilu nie jest nierozliczalne.
+Memory to system trzywarstwowy oparty na plikach, który możesz czytać, selekcjonować i audytować — celowo *nie* ukryty magazyn wektorowy. **L1** to lustro obszaru roboczego plus dołączany ślad zdarzeń (`trace/<surface>/<date>.jsonl`); **L2** to wyselekcjonowane fakty per-powierzchnia (`L2/<surface>.md`); **L3** to synteza między-powierzchniowa (`L3/<profile|recent|scope|preferences>.md`). Ponieważ L2 cytuje L1, a L3 cytuje L2, nic w twoim profilu nie jest nierozliczalne.
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/memory/01-3%20layer%20memory%20graph.png" alt="Graf pamięci DeepTutor" width="900">
@@ -550,7 +550,7 @@ Repozytorium zawiera główny [`SKILL.md`](../../SKILL.md) — około 150-liniow
 | `deeptutor chat` | Interaktywny REPL z kontrolkami możliwości, narzędzia, KB, notatnika i historii |
 | `deeptutor partner list/create/start/stop` | Zarządzaj partnerami połączonymi przez IM |
 | `deeptutor kb list/info/create/add/search/set-default/delete` | Zarządzaj bazami wiedzy LlamaIndex |
-| `deeptutor skill search/install/list/remove/login/publish/update` | Zarządzaj umiejętnościami, instaluj z hubów i publikuj własne (`eduhub:<slug>` domyślnie, patrz Ekosystem) |
+| `deeptutor skill search/install/list/remove/login/logout/publish/update` | Zarządzaj umiejętnościami, instaluj z hubów i publikuj własne (`eduhub:<slug>` domyślnie, patrz Ekosystem) |
 | `deeptutor memory show/clear` | Inspekcjonuj dokumenty pamięci L2/L3 lub wyczyść pamięć L1/wszystko |
 | `deeptutor session list/show/open/rename/delete` | Zarządzaj współdzielonymi sesjami |
 | `deeptutor notebook list/create/show/add-md/replace-md/remove-record` | Zarządzaj notatnikami z plików Markdown |

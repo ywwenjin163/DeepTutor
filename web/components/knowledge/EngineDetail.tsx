@@ -92,8 +92,10 @@ const MODE_DESCRIPTIONS: Record<string, string> = {
   "lightrag:hybrid":
     "Combines local and global retrieval — a solid general default.",
   "lightrag:mix": "Fuses knowledge-graph and vector retrieval.",
-  "lightrag-server:naive": "Plain vector retrieval, without the knowledge graph.",
-  "lightrag-server:local": "Local context focused on the most relevant entities.",
+  "lightrag-server:naive":
+    "Plain vector retrieval, without the knowledge graph.",
+  "lightrag-server:local":
+    "Local context focused on the most relevant entities.",
   "lightrag-server:global": "Theme-level retrieval over global relationships.",
   "lightrag-server:hybrid":
     "Combines local and global retrieval — a solid general default.",

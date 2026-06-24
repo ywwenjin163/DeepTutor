@@ -349,7 +349,7 @@ Partners अपनी soul, model policy, library, memory, और channels व�
 <img src="../../assets/figs/web-1.4.6+/partners/02-IM%20config%20for%20each%20partner.png" alt="प्रत्येक partner के लिए per-partner IM channel configuration" width="900">
 </div>
 
-Channel layer schema-driven है और installed extras और configured credentials के आधार पर Feishu, Telegram, Slack, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix, और Microsoft Teams जैसे IM platforms से connect हो सकती है। एक partner को subagent के रूप में भी connect किया जा सकता है और normal chat turn से consult किया जा सकता है — नीचे **My Agents** देखें।
+Channel layer schema-driven है और installed extras और configured credentials के आधार पर Feishu, Telegram, Slack, Discord, DingTalk, QQ/NapCat, WeCom, WhatsApp, Zulip, Matrix, Mochat, और Microsoft Teams जैसे IM platforms से connect हो सकती है। एक partner को subagent के रूप में भी connect किया जा सकता है और normal chat turn से consult किया जा सकता है — नीचे **My Agents** देखें।
 
 </details>
 
@@ -415,13 +415,13 @@ Book selected sources को एक interactive **living book** में बद
 <img src="../../assets/figs/web-1.4.6+/knowledge/00-overview.png" alt="DeepTutor Knowledge Center" width="900">
 </div>
 
-Knowledge bases RAG के पीछे document collections हैं — वे Chat turns, Co-Writer edits, Book generation, और Partner conversations को ground करते हैं। जो distinctive है वह है **retrieval engines का choice**: **LlamaIndex** (default, local vector + BM25), **PageIndex** (hosted, reasoning retrieval with page-level citations), **GraphRAG** और **LightRAG** (knowledge-graph retrieval), या एक linked **Obsidian** vault जिसे tutor in-place पढ़ता और लिखता है। हर KB को एक engine द्वारा index किया जाता है।
+Knowledge bases RAG के पीछे document collections हैं — वे Chat turns, Co-Writer edits, Book generation, और Partner conversations को ground करते हैं। जो distinctive है वह है **retrieval engines का choice**: **LlamaIndex** (default, local vector + BM25), **PageIndex** (hosted, reasoning retrieval with page-level citations), **GraphRAG** और **LightRAG** (knowledge-graph retrieval), **LightRAG Server** (retrieval एक external LightRAG instance पर offload किया जाता है जिसे आप HTTP पर connect करते हैं), या एक linked **Obsidian** vault जिसे tutor in-place पढ़ता और लिखता है। हर KB एक engine से bound होती है।
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/knowledge/01-create%20knowledge%20base.png" alt="एक knowledge base बनाएं" width="900">
 </div>
 
-KB बनाते समय, आप either **नया create** करते हैं (documents upload करें और fresh index build करें) या **existing link** करते हैं (कहीं और बना index reuse करें, re-index के बिना in-place पढ़ें)। Re-indexing एक नई flat `version-N` directory लिखता है और prior ones रखता है, इसलिए एक working index rebuild के दौरान कभी destroy नहीं होता। Document parsing — Text-only, MinerU, Docling, या markitdown — **Settings → Knowledge Base** में choose किया जाता है, local model downloads default रूप से off हैं। CLI lifecycle को `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default`, और `delete` से mirror करता है।
+KB बनाते समय, आप either **नया create** करते हैं (documents upload करें और fresh index build करें) या **existing link** करते हैं (कहीं और बना index reuse करें, re-index के बिना in-place पढ़ें)। Re-indexing एक नई flat `version-N` directory लिखता है और prior ones रखता है, इसलिए एक working index rebuild के दौरान कभी destroy नहीं होता। Document parsing — Text-only, MinerU, Docling, markitdown, या PyMuPDF4LLM — **Settings → Knowledge Base** में choose किया जाता है, local model downloads default रूप से off हैं। CLI lifecycle को `deeptutor kb list`, `info`, `create`, `add`, `search`, `set-default`, और `delete` से mirror करता है।
 
 </details>
 
@@ -449,7 +449,7 @@ Learning Space library और personalization layer है — वह जगह 
 <img src="../../assets/figs/web-1.4.6+/memory/00-overview.png" alt="DeepTutor memory overview" width="900">
 </div>
 
-Memory एक file-backed, three-layer system है जिसे आप पढ़, curate, और audit कर सकते हैं — जानबूझकर एक hidden vector store नहीं। **L1** workspace mirror plus एक append-only event trace (`trace/<surface>/<date>.jsonl`) है; **L2** per-surface curated facts (`L2/<surface>.md`) है; **L3** cross-surface synthesis (`L3/<profile|recent|scope>.md`) है। क्योंकि L2 L1 cite करता है और L3 L2 cite करता है, आपके profile में कुछ भी unaccountable नहीं है।
+Memory एक file-backed, three-layer system है जिसे आप पढ़, curate, और audit कर सकते हैं — जानबूझकर एक hidden vector store नहीं। **L1** workspace mirror plus एक append-only event trace (`trace/<surface>/<date>.jsonl`) है; **L2** per-surface curated facts (`L2/<surface>.md`) है; **L3** cross-surface synthesis (`L3/<profile|recent|scope|preferences>.md`) है। क्योंकि L2 L1 cite करता है और L3 L2 cite करता है, आपके profile में कुछ भी unaccountable नहीं है।
 
 <div align="center">
 <img src="../../assets/figs/web-1.4.6+/memory/01-3%20layer%20memory%20graph.png" alt="DeepTutor memory graph" width="900">
@@ -550,7 +550,7 @@ Repo एक root [`SKILL.md`](../../SKILL.md) ship करता है — ए�
 | `deeptutor chat` | capability, tool, KB, notebook, और history controls के साथ interactive REPL |
 | `deeptutor partner list/create/start/stop` | IM-connected partners manage करें |
 | `deeptutor kb list/info/create/add/search/set-default/delete` | LlamaIndex knowledge bases manage करें |
-| `deeptutor skill search/install/list/remove/login/publish/update` | Skills manage करें, hubs से install करें, और अपनी खुद publish करें (default `eduhub:<slug>`, Ecosystem देखें) |
+| `deeptutor skill search/install/list/remove/login/logout/publish/update` | Skills manage करें, hubs से install करें, और अपनी खुद publish करें (default `eduhub:<slug>`, Ecosystem देखें) |
 | `deeptutor memory show/clear` | L2/L3 memory docs inspect करें या L1/all memory clear करें |
 | `deeptutor session list/show/open/rename/delete` | Shared sessions manage करें |
 | `deeptutor notebook list/create/show/add-md/replace-md/remove-record` | Markdown files से notebooks manage करें |

@@ -103,12 +103,8 @@ def test_client_query_context_maps_references_to_sources() -> None:
 
 
 def test_client_verify_key_true_and_false() -> None:
-    good = LightRagServerClient(
-        LightRagServerConfig("http://x", "secret"), transport=_transport()
-    )
-    bad = LightRagServerClient(
-        LightRagServerConfig("http://x", "wrong"), transport=_transport()
-    )
+    good = LightRagServerClient(LightRagServerConfig("http://x", "secret"), transport=_transport())
+    bad = LightRagServerClient(LightRagServerConfig("http://x", "wrong"), transport=_transport())
     assert asyncio.run(good.verify_key()) is True
     assert asyncio.run(bad.verify_key()) is False
 
@@ -161,9 +157,7 @@ def test_probe_unreachable_server_reports_error() -> None:
         raise httpx.ConnectError("refused", request=request)
 
     probe = asyncio.run(
-        probe_server(
-            "http://x", "", client_factory=_client_factory(httpx.MockTransport(boom))
-        )
+        probe_server("http://x", "", client_factory=_client_factory(httpx.MockTransport(boom)))
     )
     assert probe.ok is False
     assert "Could not reach" in (probe.error or "")
